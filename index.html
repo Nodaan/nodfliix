@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>NodFlix – Watch Free Movies</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      background-color: #141414;
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: #e50914;
+      padding: 20px;
+      font-size: 2rem;
+      font-weight: bold;
+      text-align: center;
+    }
+    .search-bar {
+      text-align: center;
+      margin: 20px;
+    }
+    .search-bar input {
+      width: 60%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 5px;
+    }
+    .categories {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .categories button {
+      background: #333;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      margin: 5px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .categories button:hover {
+      background: #e50914;
+    }
+    .movies-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      padding: 20px;
+    }
+    .movie-card {
+      background: #222;
+      border-radius: 10px;
+      width: 200px;
+      text-align: center;
+      overflow: hidden;
+    }
+    .movie-card img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+    }
+    .movie-title {
+      padding: 10px;
+      font-size: 1rem;
+    }
+    .watch-btn {
+      display: block;
+      background-color: #e50914;
+      padding: 10px;
+      text-decoration: none;
+      color: white;
+      font-weight: bold;
+    }
+    .watch-btn:hover {
+      background-color: #b0060d;
+    }
+    footer {
+      text-align: center;
+      color: #888;
+      margin: 30px 0 20px;
+    }
+  </style>
+</head>
+<body>
+
+<header>🍿 NodFlix</header>
+
+<div class="search-bar">
+  <input type="text" placeholder="Search movies..." />
+</div>
+
+<div class="categories">
+  <button>All</button>
+  <button>Action</button>
+  <button>Comedy</button>
+  <button>Drama</button>
+  <button>Horror</button>
+</div>
+
+<div class="movies-container" id="movies"></div>
+
+<footer>© 2025 NodFlix | Made by Nod 🎬</footer>
+
+<script>
+  const movieContainer = document.getElementById("movies");
+  const searchInput = document.querySelector(".search-bar input");
+  const categoryButtons = document.querySelectorAll(".categories button");
+
+  fetch("movies.json")
+    .then(res => {
+      if (!res.ok) throw new Error("Network response was not ok");
+      return res.json();
+    })
+    .then(movies => {
+      movies.forEach(movie => {
+        const card = document.createElement("div");
+        card.className = "movie-card";
+        card.setAttribute("data-category", movie.category.toLowerCase());
+
+        card.innerHTML = 
+          <img src="${movie.poster}" alt="${movie.title}" />
+          <div class="movie-title">${movie.title}</div>
+          <a class="watch-btn" href="${movie.link}" target="_blank" rel="noopener noreferrer">▶️ Watch</a>
+        ;
+
+        movieContainer.appendChild(card);
+      });
+
+      setupFilters();
+    })
+    .catch(error => {
+      console.error("Failed to load movies:", error);
+      movieContainer.innerHTML = "<p style='color:#f00;'>Failed to load movies.</p>";
+    });
+
+  function setupFilters() {
+    const movieCards = document.querySelectorAll(".movie-card");
+
+    // Search filter
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.toLowerCase();
+      movieCards.forEach(card => {
+        const title = card.querySelector(".movie-title").textContent.toLowerCase();
+        card.style.display = title.includes(query) ? "inline-block" : "none";
+      });
+    });
+
+    // Category filter
+    categoryButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const selected = button.textContent.toLowerCase();
+        movieCards.forEach(card => {
+                  const category = card.getAttribute("data-category");
+                  card.style.display = (selected === "all" || category === selected) ? "inline-block" : "none";
+                });
+
+                searchInput.value = ""; // Clear search on category change
+              });
+            });
+          }
+        </script>
+
+        </body>
+        </html>
